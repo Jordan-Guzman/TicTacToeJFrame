@@ -20,7 +20,7 @@ public class View extends JFrame implements ActionListener
    JPanel timerBar;
    JLabel timerText = new JLabel("00:00:00");
    String str = "00:00:00";
-   JButton playerSelect;
+   JButton button;
    JButton computerSelect;
    ActionListener tileSelect = new PlayerButtonPress();
    ActionListener computerPress = new ComputerButtonPress();
@@ -59,25 +59,23 @@ public class View extends JFrame implements ActionListener
          JPanel square = new JPanel();
          square.setLayout(new BorderLayout());
          square.setBackground(Color.BLUE);
-         board[row][0] = new JPanel();
          frame.add(square);
-         square.add(playerSelect = new JButton(), BorderLayout.CENTER);
-         playerSelect.setBackground(Color.BLUE);
-         playerSelect.addActionListener(tileSelect);
-         buttons[row][0] = playerSelect;
+         square.add(button = new JButton(), BorderLayout.CENTER);
+         button.setBackground(Color.BLUE);
+         button.addActionListener(tileSelect);
+         buttons[row][0] = button;
          
          for(col = 1; col < 3; col++)
          {
             JPanel square2 = new JPanel();
             square2.setLayout(new BorderLayout());
             square2.setBackground(Color.BLUE);
-            buttons[row][col] = new JButton();
             board[row][col] = new JPanel();
             frame.add(square2);
-            square2.add(playerSelect = new JButton(), BorderLayout.CENTER);
-            playerSelect.setBackground(Color.BLUE);
-            playerSelect.addActionListener(tileSelect);
-            buttons[row][col] = playerSelect;
+            square2.add(button = new JButton(), BorderLayout.CENTER);
+            button.setBackground(Color.BLUE);
+            button.addActionListener(tileSelect);
+            buttons[row][col] = button;
          }
       }
       for(int n = 0; n < 2; n++)
@@ -105,11 +103,7 @@ public class View extends JFrame implements ActionListener
          
          panel.removeAll();
          panel.revalidate();
-//         panel.add(playerSelect = new JButton(), BorderLayout.CENTER);
          panel.add(result = new JLabel(o),BorderLayout.CENTER);
-//         playerSelect.add(new JLabel(x), BorderLayout.CENTER);
-//         playerSelect.setBackground(Color.BLUE);
-//         playerSelect.addActionListener(tileSelect);
          panel.repaint();
       }
    }
