@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class View extends JFrame implements ActionListener
 {
@@ -21,15 +22,22 @@ public class View extends JFrame implements ActionListener
    JLabel timerText = new JLabel("00:00:00");
    String str = "00:00:00";
    JButton button;
-   JButton computerSelect;
-   ActionListener tileSelect = new PlayerButtonPress();
-   ActionListener computerPress = new ComputerButtonPress();
+   JButton playerPush;
+   JButton computerPush;
+   ActionListener tileSelect = new ButtonPress();
+   Random rand = new Random();
+   int row;
+   int col;
    
    String xPath = "TicTacToe/X.png";
    String oPath = "TicTacToe/O.png";
    Icon x;
    Icon o;
    JLabel result;
+   boolean oLabel = false;
+   boolean xLabel = false;
+   int updatedRow;
+   int updatedCol;
    
    
    public View()
@@ -70,7 +78,6 @@ public class View extends JFrame implements ActionListener
             JPanel square2 = new JPanel();
             square2.setLayout(new BorderLayout());
             square2.setBackground(Color.BLUE);
-            board[row][col] = new JPanel();
             frame.add(square2);
             square2.add(button = new JButton(), BorderLayout.CENTER);
             button.setBackground(Color.BLUE);
@@ -92,47 +99,78 @@ public class View extends JFrame implements ActionListener
       compPress();
    }
    
-   
-   private class PlayerButtonPress implements ActionListener
+   private class ButtonPress implements ActionListener
    {
       public void actionPerformed(ActionEvent e)
       {
-         JButton xLabel = (JButton)e.getSource();
-         JPanel panel = (JPanel) xLabel.getParent();
-         System.out.println("X BUTTON");
+         JButton button = (JButton)e.getSource();
+         JPanel panel = (JPanel) button.getParent();
          
-         panel.removeAll();
-         panel.revalidate();
-         panel.add(result = new JLabel(o),BorderLayout.CENTER);
-         panel.repaint();
+         if(getOLabel() == true)
+         {
+            System.out.println("O BUTTON");
+            panel.removeAll();
+            panel.revalidate();
+            panel.add(result = new JLabel(o),BorderLayout.CENTER);
+            result.setBackground(Color.BLUE);
+            panel.repaint();
+            resetOLabel();
+            buttons[row][col] = null;
+         }
+         else 
+         {
+            
+            for(int m = 0; m < 3; m++)
+            {
+               for(int n = 0; n < 3; n++)
+               {
+                  if(buttons[m][n] == (JButton)e.getSource())
+                  {
+                     System.out.println("row " + m + " " + "column " + n);
+                     panel.removeAll();
+                     panel.revalidate();
+                     panel.add(result = new JLabel(x),BorderLayout.CENTER);
+                     result.setBackground(Color.BLUE);
+                     panel.repaint();
+                     buttons[m][n] = null;
+                  }
+               }
+            }
+            compPress();
+         }
       }
    }
    
-   private class ComputerButtonPress implements ActionListener
+   private void resetOLabel()
    {
-      public void actionPerformed(ActionEvent e)
-      {
-         JButton oLabel = (JButton)e.getSource();
-         JPanel panel = (JPanel) oLabel.getParent();
-         System.out.println("O Button");
-         panel.removeAll();
-         
-//         panel.removeAll();
-//         panel.revalidate();
-//         panel.add(playerSelect = new JButton(), BorderLayout.CENTER);
-//         playerSelect.setLayout(new BorderLayout());
-//         playerSelect.add(new JLabel(o), BorderLayout.CENTER);
-//         playerSelect.setBackground(Color.BLUE);
-//         playerSelect.addActionListener(computerPress);
-//         panel.repaint();
-      }
+      oLabel = false;
+   }
+   
+   private void setOLabel()
+   {
+      oLabel = true;
+   }
+   
+   public boolean getOLabel()
+   {
+      return oLabel;
    }
    
    public void compPress()
    {
-//      computerSelect = buttons[2][1];
-//      computerSelect.addActionListener(computerPress);
-      buttons[1][2].doClick();
+      row = rand.nextInt(3);
+      col = rand.nextInt(3);
+//      updatedRow = row;
+//      updatedCol = col;
+      if(buttons[row][col] != null)
+      {
+         setOLabel();
+         buttons[row][col].doClick();
+      }
+      else
+      {
+         compPress();
+      }
    }
    
    private void timerBar()
