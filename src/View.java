@@ -11,9 +11,8 @@ public class View extends JFrame implements ActionListener
    JFrame frame;
    GameTimer timer;
    
-   int count = 0;
+   int count;
    
-   JPanel[][] board = new JPanel[3][3];
    JButton[][] buttons = new JButton[3][3];
    JButton timerButton;
    HumanPlayer human;
@@ -22,8 +21,6 @@ public class View extends JFrame implements ActionListener
    JLabel timerText = new JLabel("00:00:00");
    String str = "00:00:00";
    JButton button;
-   JButton playerPush;
-   JButton computerPush;
    ActionListener tileSelect = new ButtonPress();
    Random rand = new Random();
    int row;
@@ -39,6 +36,7 @@ public class View extends JFrame implements ActionListener
    int updatedRow;
    int updatedCol;
    
+   int tracker;
    
    public View()
    {
@@ -53,6 +51,8 @@ public class View extends JFrame implements ActionListener
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.setLayout(new GridLayout(4, 3, 2, 2));
+      tracker = 0;
+      count = 0;
       createBoard();
       active();
    }
@@ -108,7 +108,6 @@ public class View extends JFrame implements ActionListener
          
          if(getOLabel() == true)
          {
-            System.out.println("O BUTTON");
             panel.removeAll();
             panel.revalidate();
             panel.add(result = new JLabel(o),BorderLayout.CENTER);
@@ -116,26 +115,28 @@ public class View extends JFrame implements ActionListener
             panel.repaint();
             resetOLabel();
             buttons[row][col] = null;
+            controller.oTileTracker(row, col);
+            controller.checkOPlays();
          }
          else 
          {
-            
             for(int m = 0; m < 3; m++)
             {
                for(int n = 0; n < 3; n++)
                {
                   if(buttons[m][n] == (JButton)e.getSource())
                   {
-                     System.out.println("row " + m + " " + "column " + n);
                      panel.removeAll();
                      panel.revalidate();
                      panel.add(result = new JLabel(x),BorderLayout.CENTER);
                      result.setBackground(Color.BLUE);
                      panel.repaint();
                      buttons[m][n] = null;
+                     controller.xTileTracker(m, n);
                   }
                }
             }
+            controller.checkXPlays();
             compPress();
          }
       }
@@ -160,8 +161,6 @@ public class View extends JFrame implements ActionListener
    {
       row = rand.nextInt(3);
       col = rand.nextInt(3);
-//      updatedRow = row;
-//      updatedCol = col;
       if(buttons[row][col] != null)
       {
          setOLabel();
@@ -225,6 +224,7 @@ public class View extends JFrame implements ActionListener
       while(frame.isDisplayable())
       {
          timerText.setText(timer.getTimerValue());
+         controller.tieGame();
       }
    }
 }

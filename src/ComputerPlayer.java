@@ -11,12 +11,6 @@ public class ComputerPlayer
       rand = new Random();
    }
    
-   public void randomSelect()
-   {
-      row = rand.nextInt(3);
-      col = rand.nextInt(3);
-   }
-   
    public int getRow()
    {
       return row;
