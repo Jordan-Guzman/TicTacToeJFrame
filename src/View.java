@@ -108,6 +108,8 @@ public class View extends JFrame implements ActionListener
          
          if(getOLabel() == true)
          {
+//            Pause thread = new Pause();
+//            thread.start();
             panel.removeAll();
             panel.revalidate();
             panel.add(result = new JLabel(o),BorderLayout.CENTER);
@@ -141,6 +143,26 @@ public class View extends JFrame implements ActionListener
          }
       }
    }
+   /*
+   private class Pause extends Thread
+   {
+      public void run()
+      {
+         doNothing(1000);
+      }
+      
+      public void doNothing(int milliseconds)
+      {
+         try
+         {
+            Thread.sleep(milliseconds);
+         } catch (Exception e)
+         {
+            System.out.println("It fucked up");
+         }
+      }
+   }
+   */
    
    private void resetOLabel()
    {
