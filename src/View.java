@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class View extends JFrame implements ActionListener
 {
@@ -10,9 +11,8 @@ public class View extends JFrame implements ActionListener
    JFrame frame;
    GameTimer timer;
    
-   int count = 0;
+   int count;
    
-   JPanel[][] board = new JPanel[3][3];
    JButton[][] buttons = new JButton[3][3];
    JButton timerButton;
    HumanPlayer human;
@@ -20,17 +20,23 @@ public class View extends JFrame implements ActionListener
    JPanel timerBar;
    JLabel timerText = new JLabel("00:00:00");
    String str = "00:00:00";
-   JButton playerSelect;
-   JButton computerSelect;
-   ActionListener tileSelect = new PlayerButtonPress();
-   ActionListener computerPress = new ComputerButtonPress();
+   JButton button;
+   ActionListener tileSelect = new ButtonPress();
+   Random rand = new Random();
+   int row;
+   int col;
    
    String xPath = "TicTacToe/X.png";
    String oPath = "TicTacToe/O.png";
    Icon x;
    Icon o;
    JLabel result;
+   boolean oLabel = false;
+   boolean xLabel = false;
+   int updatedRow;
+   int updatedCol;
    
+   int tracker;
    
    public View()
    {
@@ -45,6 +51,8 @@ public class View extends JFrame implements ActionListener
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       frame.setVisible(true);
       frame.setLayout(new GridLayout(4, 3, 2, 2));
+      tracker = 0;
+      count = 0;
       createBoard();
       active();
    }
@@ -59,25 +67,22 @@ public class View extends JFrame implements ActionListener
          JPanel square = new JPanel();
          square.setLayout(new BorderLayout());
          square.setBackground(Color.BLUE);
-         board[row][0] = new JPanel();
          frame.add(square);
-         square.add(playerSelect = new JButton(), BorderLayout.CENTER);
-         playerSelect.setBackground(Color.BLUE);
-         playerSelect.addActionListener(tileSelect);
-         buttons[row][0] = playerSelect;
+         square.add(button = new JButton(), BorderLayout.CENTER);
+         button.setBackground(Color.BLUE);
+         button.addActionListener(tileSelect);
+         buttons[row][0] = button;
          
          for(col = 1; col < 3; col++)
          {
             JPanel square2 = new JPanel();
             square2.setLayout(new BorderLayout());
             square2.setBackground(Color.BLUE);
-            buttons[row][col] = new JButton();
-            board[row][col] = new JPanel();
             frame.add(square2);
-            square2.add(playerSelect = new JButton(), BorderLayout.CENTER);
-            playerSelect.setBackground(Color.BLUE);
-            playerSelect.addActionListener(tileSelect);
-            buttons[row][col] = playerSelect;
+            square2.add(button = new JButton(), BorderLayout.CENTER);
+            button.setBackground(Color.BLUE);
+            button.addActionListener(tileSelect);
+            buttons[row][col] = button;
          }
       }
       for(int n = 0; n < 2; n++)
@@ -94,51 +99,99 @@ public class View extends JFrame implements ActionListener
       compPress();
    }
    
-   
-   private class PlayerButtonPress implements ActionListener
+   private class ButtonPress implements ActionListener
    {
       public void actionPerformed(ActionEvent e)
       {
-         JButton xLabel = (JButton)e.getSource();
-         JPanel panel = (JPanel) xLabel.getParent();
-         System.out.println("X BUTTON");
+         JButton button = (JButton)e.getSource();
+         JPanel panel = (JPanel) button.getParent();
          
-         panel.removeAll();
-         panel.revalidate();
-//         panel.add(playerSelect = new JButton(), BorderLayout.CENTER);
-         panel.add(result = new JLabel(o),BorderLayout.CENTER);
-//         playerSelect.add(new JLabel(x), BorderLayout.CENTER);
-//         playerSelect.setBackground(Color.BLUE);
-//         playerSelect.addActionListener(tileSelect);
-         panel.repaint();
+         if(getOLabel() == true)
+         {
+//            Pause thread = new Pause();
+//            thread.start();
+            panel.removeAll();
+            panel.revalidate();
+            panel.add(result = new JLabel(o),BorderLayout.CENTER);
+            result.setBackground(Color.BLUE);
+            panel.repaint();
+            resetOLabel();
+            buttons[row][col] = null;
+            controller.oTileTracker(row, col);
+            controller.checkOPlays();
+         }
+         else 
+         {
+            for(int m = 0; m < 3; m++)
+            {
+               for(int n = 0; n < 3; n++)
+               {
+                  if(buttons[m][n] == (JButton)e.getSource())
+                  {
+                     panel.removeAll();
+                     panel.revalidate();
+                     panel.add(result = new JLabel(x),BorderLayout.CENTER);
+                     result.setBackground(Color.BLUE);
+                     panel.repaint();
+                     buttons[m][n] = null;
+                     controller.xTileTracker(m, n);
+                  }
+               }
+            }
+            controller.checkXPlays();
+            compPress();
+         }
       }
    }
-   
-   private class ComputerButtonPress implements ActionListener
+   /*
+   private class Pause extends Thread
    {
-      public void actionPerformed(ActionEvent e)
+      public void run()
       {
-         JButton oLabel = (JButton)e.getSource();
-         JPanel panel = (JPanel) oLabel.getParent();
-         System.out.println("O Button");
-         panel.removeAll();
-         
-//         panel.removeAll();
-//         panel.revalidate();
-//         panel.add(playerSelect = new JButton(), BorderLayout.CENTER);
-//         playerSelect.setLayout(new BorderLayout());
-//         playerSelect.add(new JLabel(o), BorderLayout.CENTER);
-//         playerSelect.setBackground(Color.BLUE);
-//         playerSelect.addActionListener(computerPress);
-//         panel.repaint();
+         doNothing(1000);
       }
+      
+      public void doNothing(int milliseconds)
+      {
+         try
+         {
+            Thread.sleep(milliseconds);
+         } catch (Exception e)
+         {
+            System.out.println("It fucked up");
+         }
+      }
+   }
+   */
+   
+   private void resetOLabel()
+   {
+      oLabel = false;
+   }
+   
+   private void setOLabel()
+   {
+      oLabel = true;
+   }
+   
+   public boolean getOLabel()
+   {
+      return oLabel;
    }
    
    public void compPress()
    {
-//      computerSelect = buttons[2][1];
-//      computerSelect.addActionListener(computerPress);
-      buttons[1][2].doClick();
+      row = rand.nextInt(3);
+      col = rand.nextInt(3);
+      if(buttons[row][col] != null)
+      {
+         setOLabel();
+         buttons[row][col].doClick();
+      }
+      else
+      {
+         compPress();
+      }
    }
    
    private void timerBar()
@@ -193,6 +246,7 @@ public class View extends JFrame implements ActionListener
       while(frame.isDisplayable())
       {
          timerText.setText(timer.getTimerValue());
+         controller.tieGame();
       }
    }
 }
